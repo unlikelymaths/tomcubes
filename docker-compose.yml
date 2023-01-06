@@ -1,0 +1,29 @@
+
+version: "3.8"
+services:
+  tomcubes-dev:
+    container_name: tomcubes-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    image: tomcubes:dev
+    network_mode: "host"
+    shm_size: '8gb'
+    volumes:
+      - .:/workspace/tomcubes
+      - tomcubes-dev-vscode:/root/.vscode-server
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=utility,compute,graphics
+      - CMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - CMAKE_BUILD_PARALLEL_LEVEL=16
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    command: "/bin/bash --init-file /workspace/tomcubes/.vscode/setup.sh"
+    stdin_open: true
+    tty: true
+volumes:
+  tomcubes-dev-vscode:
